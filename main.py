@@ -2,6 +2,8 @@
 from common import *
 import re
 import time
+import base64
+import pymongo
 import requests
 from datetime import datetime
 
@@ -21,12 +23,31 @@ previous_time = None       # 一个时间间隔开始的时间
 def Init():
     # 初始化
     global live_num, live_time, top_live_num, previous_time
+
+    # 初始化：数据库、socket 超时时间
+    # 连接 mongo 数据库
+    mongo_client = pymongo.MongoClient('mongodb://%s:%s@%s:%d/%s'%(mongo_user,mongo_pwd,mongo_host,mongo_port,mongo_dbname))
+
+    # 切换 mongo 数据库
+    mongo_db = mongo_client[mongo_dbname]
+
+    # 获取 mongo 数据库中的集合
+    mongo_history = mongo_db.history
+    mongo_data = mongo_db.data
+
+    mongo_history.insert_one({'top_live_num':100})
+
+    # 创建集合 peoples 的索引
+    # if mongo_data.count() == 0:
+    #     CreateIndex(mongo_data)
+
     # 从数据库中取出曾经的最高直播总数
     top_live_num = 0
     today_heat_point = 0
     live_num = 0
     live_time = 0
     previous_time = datetime.now()
+
 
 def Parse(url,pattern):
     # 根据模式串 pattern 解析 url 页面源码

@@ -5,28 +5,33 @@
 * pymongo
 
 ### MongoDB 配置
-1. 开启 MongoDB 权限认证，创建管理员用户
-   可参考：http://gogs.yangyingming.com/windcode/my-db
-   假设创建的管理员账户为：
-```
-user: admin
-password: admin123
-```
+1. 开启 MongoDB 权限认证，创建管理员用户  
+    可参考：http://gogs.yangyingming.com/windcode/my-db  
+    假设创建的管理员账户为：
+    
+    ```
+    user: admin
+    password: admin123
+    ```
 2. 远程连接 MongoDB
-```mongo mongodb://[your_ip]:27017```
+
+    ```
+    mongo mongodb://[your_ip]:27017
+    ```
 3. 运行如下代码可创建 heatbox 数据库用户
-```
-use admin
-db.auth('admin','admin123')
-use heatbox			# 创建 heatbox 数据库
-db.createUser(
-	{
-	user:'admin',	# heatbox 数据库的操作用户
-	pwd:'admin123',	# heatbox 数据库的用户密码
-	roles:[{role:'readWrite',db:'heatbox'}] 	# 用户权限
-	}
-)
-```
+
+    ```
+    use admin
+    db.auth('admin','admin123')
+    use heatbox			# 创建 heatbox 数据库
+    db.createUser(
+        {
+        user:'admin',	# heatbox 数据库的操作用户
+        pwd:'admin123',	# heatbox 数据库的用户密码
+        roles:[{role:'readWrite',db:'heatbox'}] 	# 用户权限
+        }
+    )
+    ```
 
 ### 游戏关键字
 * 绝地求生

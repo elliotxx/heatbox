@@ -3,6 +3,7 @@
 ### 依赖
 * requests
 * pymongo
+* pyecharts
 
 ### MongoDB 配置
 1. 开启 MongoDB 权限认证，创建管理员用户  
@@ -51,3 +52,7 @@
 
 当天的热度得分：heat_point = float(live_num) / top_live_num * 100 + float(live_time) / (24*60*60) * 100
 ```
+
+### 参考资料
+* python时间处理之datetime  
+http://blog.csdn.net/wirelessqa/article/details/7973121

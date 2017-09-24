@@ -5,7 +5,7 @@ from datetime import datetime
 
 # 设置
 keys = ['绝地求生','吃鸡']    # 监控的关键词
-watch_interval = 2        # 默认监控时间间隔，单位为秒
+watch_interval = 5        # 默认监控时间间隔，单位为秒
 
 # 数据库配置
 mongo_dbname = 'heatbox'

@@ -23,6 +23,13 @@ heat_point = None          # 当前热度得分
 today_heat_point = None    # 今天的最高得分
 previous_time = None       # 一个时间间隔开始的时间
 
+def isSameDay(day_a,day_b):
+    # 判断是否是同一天
+    if day_a.strftime('%Y-%m-%d') == day_b.strftime('%Y-%m-%d'):
+        return True
+    else:
+        return False
+
 def Init():
     # 初始化
     global live_time, top_live_num, previous_time
@@ -42,18 +49,32 @@ def Init():
     # if mongo_data.count() == 0:
     #     CreateIndex(mongo_data)
 
+    # 从数据库中取出 最近一条时间记录保存的数据
+    last_data = mongo_data.find().sort([('cur_time', pymongo.DESCENDING)]).limit(1)[0]
+    now = datetime.now()
+    # 更新今日直播时间 和 上一个时间记录的时刻
+    if last_data == None or not isSameDay(last_data['cur_time'],now):
+        # 上一个时间片段不存在 或者 不在同一天
+        live_time = 0
+        previous_time = datetime.now() 
+    else:
+        live_time = last_data['live_time']
+        previous_time = last_data['cur_time']
+
     # 从数据库中取出 历史最高直播间数 和 当天的最高得分
     top_live_num = mongo_global.find_one('top_live_num')
     today_heat_point = mongo_global.find_one('today_heat_point')
-    top_live_num = 0 if top_live_num == None else top_live_num
-    today_heat_point = 0 if today_heat_point == None else today_heat_point
+    if top_live_num == None:
+        top_live_num = 0 
+    else:
+        top_live_num = top_live_num
 
-    # 从数据库中取出 最近一条时间记录保存的数据
-    last_data = mongo_data.find().sort([('cur_time', pymongo.DESCENDING)]).limit(1)[0]
-    live_time = 0 if last_data == None else last_data['live_time']
-    previous_time = datetime.now() if last_data == None else last_data['cur_time']
+    if today_heat_point == None or not isSameDay(last_data['cur_time'],now):
+        today_heat_point = 0 
+    else:
+        today_heat_point = today_heat_point
 
-    # print top_live_num, today_heat_point, live_time, previous_time
+    # print live_time, today_heat_point
 
     return mongo_global, mongo_data
 

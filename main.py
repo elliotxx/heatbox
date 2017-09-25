@@ -62,17 +62,23 @@ def Init():
         previous_time = last_data['cur_time']
 
     # 从数据库中取出 历史最高直播间数 和 当天的最高得分
-    top_live_num = mongo_global.find_one('top_live_num')
-    today_heat_point = mongo_global.find_one('today_heat_point')
-    if top_live_num == None:
-        top_live_num = 0 
-    else:
-        top_live_num = top_live_num
+    # 如果不存在，那么初始化
+    data = mongo_global.find_one()
+    # print data
 
-    if today_heat_point == None or not isSameDay(last_data['cur_time'],now):
-        today_heat_point = 0 
+    if data == None:
+        data = {'top_live_num':0, 'today_heat_point':0}
     else:
-        today_heat_point = today_heat_point
+        top_live_num = data['top_live_num']
+        if not isSameDay(last_data['cur_time'],now):
+            # 不在同一天
+            data['today_heat_point'] = 0
+        else:
+            today_heat_point = data['today_heat_point']
+
+    mongo_global.save(data)
+
+
 
     # print live_time, today_heat_point
 
@@ -109,9 +115,9 @@ def getCurLiveNo(key,page):
     #     raise Exception,'获取第 %d 页直播间列表失败'%page
     return items
 
-def getHeatPoint():
+def getHeatPoint(live_num, live_time):
     # 热度得分计算公式
-    return float(live_num) / top_live_num * 100 + float(live_time) / (24*60*60) * 100
+    return float(live_num) / top_live_num * 100 + float(live_time) / (24*60*60*live_num) * 100
 
 def updateHeatPoint(mongo_global, mongo_data):
     # 重新开始计算热度
@@ -143,13 +149,21 @@ def updateHeatPoint(mongo_global, mongo_data):
     # 更新直播间总数最高纪录
     if live_num > top_live_num:
         top_live_num = live_num
+        # 数据库中同步更新
+        data = mongo_global.find_one()    
+        data['top_live_num'] = top_live_num
+        mongo_global.save(data)
 
     # 计算热度得分
-    heat_point = getHeatPoint()
+    heat_point = getHeatPoint(live_num, live_time)
 
     # 更新今天的热度得分
     if heat_point > today_heat_point:
         today_heat_point = heat_point
+        # 数据库中同步更新
+        data = mongo_global.find_one()    
+        data['today_heat_point'] = today_heat_point
+        mongo_global.save(data)
 
 
     # 上传数据到数据库
@@ -162,32 +176,42 @@ def updateHeatPoint(mongo_global, mongo_data):
 
 
 
-
     print '%s'%cur_time
     print '真实时间间隔：%s s'%after_time
     print '直播间总数：%d'%live_num
     print '直播总时长：%d s'%live_time
-    print '当前热度得分：%f + %f = %f'%(float(live_num) / top_live_num * 100, float(live_time) / (24*60*60) * 100, heat_point)
+    print '当前热度得分：%f + %f = %f'%(float(live_num) / top_live_num * 100, float(live_time) / (24*60*60*live_num) * 100, heat_point)
     print '今日热度得分：%f'%today_heat_point
 
 
-def Render(axisx, axisy, axisy2):
+def Render(mongo_data):
     # 渲染图表
+    ## 准备数据 
+    # 初始化
+    axisx = []
+    axisy = []
+    axisy2 = []
     max_axisx_num = 6
 
-    # 维护 x、y 轴数据
-    if len(axisx) >= max_axisx_num:
-        del axisx[0]
-        del axisy[0]
-        del axisy2[0]
-    axisx.append(str(previous_time.strftime('%Y-%m-%d\n%H:%M:%S')))
-    axisy.append(heat_point)
-    axisy2.append(live_num)
+    # 从数据库中取出最近数据
+    last_data = mongo_data.find().sort([('cur_time', pymongo.DESCENDING)]).limit(max_axisx_num)
+
+    # 遍历最近数据
+    for data in last_data:
+        axisx.append(str(data['cur_time'].strftime('%Y-%m-%d\n%H:%M:%S')))
+        axisy.append(getHeatPoint(live_num, live_time))
+        axisy2.append(data['live_num'])
+
+    # 列表逆序
+    axisx = axisx[::-1]
+    axisy = axisy[::-1]
+    axisy2 = axisy2[::-1]
     print axisx
     print axisy
     print axisy2
 
 
+    ## 开始渲染
     page = Page(page_title = 'HeatBox')
 
     # line*2
@@ -202,22 +226,18 @@ def Render(axisx, axisy, axisy2):
     page.render()
 
 
-
 def main():
     # 主函数
 
     # 初始化
     mongo_global, mongo_data = Init()
 
-    axisx = []
-    axisy = []
-    axisy2 = []
     while True:
         # 更新当前热度数据
         updateHeatPoint(mongo_global, mongo_data)
 
         # 渲染图表
-        Render(axisx, axisy, axisy2)
+        Render(mongo_data)
 
         print ''
 

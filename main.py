@@ -6,7 +6,7 @@ import time
 import base64
 import pymongo
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta
 from pyecharts import Line, Grid, Page
 
 '''
@@ -192,15 +192,26 @@ def Render(mongo_data):
     axisy = []
     axisy2 = []
     max_axisx_num = 6
+    # 渲染出的图表的间隔，单位为秒
+    table_interval = 10 * 60
+    delta = timedelta(0,table_interval)
 
     # 从数据库中取出最近数据
-    last_data = mongo_data.find().sort([('cur_time', pymongo.DESCENDING)]).limit(max_axisx_num)
+    last_data = mongo_data.find().sort([('cur_time', pymongo.DESCENDING)])  #.limit(max_axisx_num)
+    cur_data = last_data[0]
 
     # 遍历最近数据
     for data in last_data:
-        axisx.append(str(data['cur_time'].strftime('%Y-%m-%d\n%H:%M:%S')))
-        axisy.append(getHeatPoint(live_num, live_time))
-        axisy2.append(data['live_num'])
+        if data['cur_time'] <= cur_data['cur_time']:
+            axisx.append(str(data['cur_time'].strftime('%Y-%m-%d\n%H:%M:%S')))
+            axisy.append(getHeatPoint(data['live_num'], data['live_time']))
+            axisy2.append(data['live_num'])
+            # 下一个时间锚点
+            # cur_data['cur_time'] -= delta
+            cur_data['cur_time'] = data['cur_time'] - delta
+            max_axisx_num -= 1
+        if max_axisx_num <= 0:
+            break
 
     # 列表逆序
     axisx = axisx[::-1]

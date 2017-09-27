@@ -191,13 +191,12 @@ def Render(mongo_data):
     axisx = []
     axisy = []
     axisy2 = []
-    max_axisx_num = 6
-    # 渲染出的图表的间隔，单位为秒
-    table_interval = 10 * 60
+    axisx_num = max_axisx_num 
+    # 时间间隔
     delta = timedelta(0,table_interval)
 
     # 从数据库中取出最近数据
-    last_data = mongo_data.find().sort([('cur_time', pymongo.DESCENDING)])  #.limit(max_axisx_num)
+    last_data = mongo_data.find().sort([('cur_time', pymongo.DESCENDING)])  
     cur_data = last_data[0]
 
     # 遍历最近数据
@@ -209,8 +208,8 @@ def Render(mongo_data):
             # 下一个时间锚点
             # cur_data['cur_time'] -= delta
             cur_data['cur_time'] = data['cur_time'] - delta
-            max_axisx_num -= 1
-        if max_axisx_num <= 0:
+            axisx_num -= 1
+        if axisx_num <= 0:
             break
 
     # 列表逆序
@@ -227,11 +226,11 @@ def Render(mongo_data):
 
     # line*2
     line = Line(title = "热度得分趋势图")
-    line.add("热度得分", axisx, axisy, is_xaxislabel_align = True, is_fill=True, area_color='#FF0000', area_opacity=0.3, mark_line=["max"])
+    line.add("热度得分", axisx, axisy, xaxis_interval = 0, xaxis_rotate = -30, xaxis_margin = 16, is_xaxislabel_align = True, is_fill=True, area_color='#FF0000', area_opacity=0.3, mark_line=["max","average"], mark_point=["max", "min"])
     page.add(line)
 
     line2 = Line(title = "直播间数趋势图")
-    line2.add("直播间数", axisx, axisy2, is_xaxislabel_align = True, is_fill=True, area_color='#000000', area_opacity=0.3, mark_line=["max"])
+    line2.add("直播间数", axisx, axisy2, xaxis_interval = 0, xaxis_rotate = -30, xaxis_margin = 16, is_xaxislabel_align = True, is_fill=True, area_color='#000000', area_opacity=0.3, mark_line=["max","average"], mark_point=["max", "min"])
     page.add(line2)
 
     page.render()

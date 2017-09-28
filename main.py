@@ -56,7 +56,7 @@ def Init():
     if last_data == None or not isSameDay(last_data['cur_time'],now):
         # 上一个时间片段不存在 或者 不在同一天
         live_time = 0
-        previous_time = datetime.now() 
+        previous_time = now
     else:
         live_time = last_data['live_time']
         previous_time = last_data['cur_time']
@@ -142,9 +142,13 @@ def updateHeatPoint(mongo_global, mongo_data):
 
     # 获得直播间总时长
     cur_time = datetime.now()
+    # 判断是否在同一天
+    if not isSameDay(previous_time,cur_time):
+        live_time = 0
     after_time = cur_time - previous_time
     previous_time = cur_time
     live_time += after_time.seconds * live_num
+
 
     # 更新直播间总数最高纪录
     if live_num > top_live_num:

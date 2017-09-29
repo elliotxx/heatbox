@@ -8,14 +8,6 @@ from datetime import datetime, timedelta
 from pyecharts import Line, Grid, Page
 
 
-live_num = None            # 当前直播间总数
-live_time = None           # 当前直播总时长
-top_live_num = None        # 曾出现过的最高直播间总数
-heat_point = None          # 当前热度得分
-today_heat_point = None    # 今天的最高得分
-previous_time = None       # 一个时间间隔开始的时间
-
-
 def Init():
     # 初始化
     global live_time, top_live_num, previous_time
@@ -72,7 +64,6 @@ def Init():
     # print live_time, today_heat_point
 
     return mongo_global, mongo_data
-
 
 
 def updateHeatPoint(mongo_global, mongo_data):

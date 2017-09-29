@@ -1,20 +1,12 @@
 #coding=utf8
-from __future__ import unicode_literals
+# from __future__ import unicode_literals
 from common import *
-import re
 import time
 import base64
 import pymongo
-import requests
 from datetime import datetime, timedelta
 from pyecharts import Line, Grid, Page
 
-'''
-def getHTML(url):
-    # 获取html页面
-    response = requests.get(url)
-    return response.content
-'''
 
 live_num = None            # 当前直播间总数
 live_time = None           # 当前直播总时长
@@ -23,12 +15,6 @@ heat_point = None          # 当前热度得分
 today_heat_point = None    # 今天的最高得分
 previous_time = None       # 一个时间间隔开始的时间
 
-def isSameDay(day_a,day_b):
-    # 判断是否是同一天
-    if day_a.strftime('%Y-%m-%d') == day_b.strftime('%Y-%m-%d'):
-        return True
-    else:
-        return False
 
 def Init():
     # 初始化
@@ -49,32 +35,35 @@ def Init():
     # if mongo_data.count() == 0:
     #     CreateIndex(mongo_data)
 
-    # 从数据库中取出 最近一条时间记录保存的数据
-    last_data = mongo_data.find().sort([('cur_time', pymongo.DESCENDING)]).limit(1)[0]
+    # 初始化 直播时间 和 上一个时间片段
     now = datetime.now()
-    # 更新今日直播时间 和 上一个时间记录的时刻
-    if last_data == None or not isSameDay(last_data['cur_time'],now):
-        # 上一个时间片段不存在 或者 不在同一天
+    if mongo_data.count()==0:
         live_time = 0
         previous_time = now
     else:
-        live_time = last_data['live_time']
-        previous_time = last_data['cur_time']
+        # 取出最后一条数据
+        last_data = mongo_data.find().sort([('cur_time', pymongo.DESCENDING)]).limit(1)[0]
+        # 更新今日直播时间 和 上一个时间记录的时刻
+        # 上一个时间片段不存在 或者 不在同一天
+        if not isSameDay(last_data['cur_time'],now):
+            live_time = 0
+            previous_time = now
+        else:
+            live_time = last_data['live_time']
+            previous_time = last_data['cur_time']
 
-    # 从数据库中取出 历史最高直播间数 和 当天的最高得分
-    # 如果不存在，那么初始化
-    data = mongo_global.find_one()
-    # print data
-
-    if data == None:
+    # 初始化 历史最高直播间数 和 当天的最高得分
+    if mongo_global.count() == 0:
         data = {'top_live_num':0, 'today_heat_point':0}
     else:
+        # 默认取出第一条数据(默认该集合中只有一条记录)
+        data = mongo_global.find_one()
+        # 初始化
         top_live_num = data['top_live_num']
         if not isSameDay(last_data['cur_time'],now):
             # 不在同一天
             data['today_heat_point'] = 0
-        else:
-            today_heat_point = data['today_heat_point']
+        today_heat_point = data['today_heat_point']
 
     mongo_global.save(data)
 
@@ -85,39 +74,6 @@ def Init():
     return mongo_global, mongo_data
 
 
-def Parse(url,pattern):
-    # 根据模式串 pattern 解析 url 页面源码
-    response = requests.get(url)
-    html = response.content
-    pattern = re.compile(pattern,re.S)
-    items = re.findall(pattern,html)
-    return items
-
-def getLivePageSum(key):
-    # 获取某关键字的直播间总页数
-    url = 'https://search.bilibili.com/live?keyword=%s'%key.decode('utf8')
-    LivePageSum_pattern = r'data-num_pages="(.*?)"'
-
-    # 匹配直播间总数
-    items = Parse(url, LivePageSum_pattern)
-    if len(items) == 0:
-        raise Exception,'获取某关键字的直播间总页数失败'
-    return int(items[0])
-
-def getCurLiveNo(key,page):
-    # 获取当前页面的直播间列表
-    url = 'https://search.bilibili.com/live?keyword=%s&page=%d&type=all&order=online&coverType=user_cover'%(key.decode('utf8'),page)
-    LiveNo_pattern = r'<li class="room-item">.*?live\.bilibili\.com/(.*?)\?'
-
-    # 匹配当前页面的所有直播间号
-    items = Parse(url, LiveNo_pattern)
-    # if len(items) == 0:
-    #     raise Exception,'获取第 %d 页直播间列表失败'%page
-    return items
-
-def getHeatPoint(live_num, live_time):
-    # 热度得分计算公式
-    return float(live_num) / top_live_num * 100 + float(live_time) / (24*60*60*live_num) * 100
 
 def updateHeatPoint(mongo_global, mongo_data):
     # 重新开始计算热度
@@ -159,7 +115,7 @@ def updateHeatPoint(mongo_global, mongo_data):
         mongo_global.save(data)
 
     # 计算热度得分
-    heat_point = getHeatPoint(live_num, live_time)
+    heat_point = getHeatPoint(live_num, live_time, top_live_num)
 
     # 更新今天的热度得分
     if heat_point > today_heat_point:
@@ -192,9 +148,13 @@ def Render(mongo_data):
     # 渲染图表
     ## 准备数据 
     # 初始化
+    # x轴：时刻
     axisx = []
+    # y轴-1：热度得分
     axisy = []
+    # y轴-2：直播间数
     axisy2 = []
+    # x轴刻度最大显示数量
     axisx_num = max_axisx_num 
     # 时间间隔
     delta = timedelta(0,table_interval)
@@ -207,7 +167,7 @@ def Render(mongo_data):
     for data in last_data:
         if data['cur_time'] <= cur_data['cur_time']:
             axisx.append(str(data['cur_time'].strftime('%Y-%m-%d\n%H:%M:%S')))
-            axisy.append(getHeatPoint(data['live_num'], data['live_time']))
+            axisy.append(getHeatPoint(data['live_num'], data['live_time'], top_live_num))
             axisy2.append(data['live_num'])
             # 下一个时间锚点
             # cur_data['cur_time'] -= delta
@@ -216,10 +176,13 @@ def Render(mongo_data):
         if axisx_num <= 0:
             break
 
-    # 列表逆序
-    axisx = axisx[::-1]
-    axisy = axisy[::-1]
+    # 列表逆序 和 降低精度处理
+    axisx = axisx[::-1]     
+    axisy = axisy[::-1] 
     axisy2 = axisy2[::-1]
+    axisy = map(lambda x:round(x,2),axisy)
+
+    # 输出测试
     print axisx
     print axisy
     print axisy2
@@ -244,8 +207,10 @@ def main():
     # 主函数
 
     # 初始化
+    printx('正在初始化……')
     mongo_global, mongo_data = Init()
 
+    printx('开始监控 "%s" 的热度变化……\n'%('"、"'.join(keys)))
     while True:
         # 更新当前热度数据
         updateHeatPoint(mongo_global, mongo_data)

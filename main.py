@@ -127,12 +127,12 @@ def updateHeatPoint(mongo_global, mongo_data):
 
 
 
-    print '%s'%cur_time
-    print '真实时间间隔：%s s'%after_time
-    print '直播间总数：%d'%live_num
-    print '直播总时长：%d s'%live_time
-    print '当前热度得分：%f + %f = %f'%(float(live_num) / top_live_num * 100, float(live_time) / (24*60*60*live_num) * 100, heat_point)
-    print '今日热度得分：%f'%today_heat_point
+    printx('%s'%cur_time)
+    printx('真实时间间隔：%s s'%after_time)
+    printx('直播间总数：%d'%live_num)
+    printx('直播总时长：%d s'%live_time)
+    printx('当前热度得分：%f + %f = %f'%(float(live_num) / top_live_num * 100, float(live_time) / (24*60*60*live_num) * 100, heat_point))
+    printx('今日热度得分：%f'%today_heat_point)
 
 
 def Render(mongo_data):

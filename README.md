@@ -38,6 +38,26 @@
     )
     ```
 
+### 启动
+1. 安装环境：Python 环境和依赖 + MongoDB
+
+2. 修改 common.py 中的数据库配置
+```
+# 数据库配置
+mongo_dbname = 'heatbox'
+mongo_host = 'your_ip'          # mongodb 主机地址
+mongo_port = 27017              # mongodb 主机端口
+mongo_user = 'your_user'        # mongodb 登陆用户
+mongo_pwd  = 'your_password'    # mongodb 用户密码
+```
+
+3. 运行 main.py
+
+4. 测试，启动 http 服务器：
+    * windows 中运行脚本 start-webserver.bat，然后用浏览器访问 http://localhost:8010/render.html 
+    * linux 中运行脚本 start-webserver.sh，然后用浏览器访问 http://[your_vps_ip]:8010/render.html
+    * 等待一会即可看到渲染结果
+
 ### 游戏关键字
 * 绝地求生
 * 吃鸡

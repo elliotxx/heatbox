@@ -93,10 +93,11 @@ def getLivePageSum(key):
     LivePageSum_pattern = r'data-num_pages="(.*?)"'
 
     # 匹配直播间总数
-    items = Parse(url, LivePageSum_pattern)
-    if len(items) == 0:
+    try:
+        items = Parse(url, LivePageSum_pattern)
+        return int(items[0])
+    except Exception,e:
         raise Exception,'获取某关键字的直播间总页数失败'
-    return int(items[0])
 
 def getCurLiveNo(key,page):
     # 获取当前页面的直播间列表

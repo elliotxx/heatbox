@@ -58,6 +58,11 @@ mongo_pwd  = 'your_password'    # mongodb 用户密码
     * linux 中运行脚本 start-webserver.sh，然后用浏览器访问 http://[your_vps_ip]:8010/render.html
     * 等待一会即可看到渲染结果
 
+### 注意
+* start-main.sh 和 start-webserver.sh 是 linux 脚本，功能分别是：
+    * start-main.sh：后台运行主进程 main.py
+    * start-webserver.sh：后台启动 http 服务器
+
 ### 游戏关键字
 * 绝地求生
 * 吃鸡

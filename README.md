@@ -57,6 +57,9 @@
 当天的热度得分：heat_point = float(live_num) / top_live_num * 100 + float(live_time) / (24*60*60*live_num) * 100
 ```
 
+### 关于代理
+* bilibili 只能用 http 协议的代理IP，使用 https 代理会请求失败
+
 ### 参考资料
 * python时间处理之datetime  
 http://blog.csdn.net/wirelessqa/article/details/7973121

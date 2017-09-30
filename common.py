@@ -17,9 +17,9 @@ timeout = 2
 # 设置
 keys = ['绝地求生','吃鸡']          # 监控的关键词
 watch_interval = 5                  # 默认监控时间间隔，单位为秒
-table_interval = 30 * 60            # x 轴的时间间隔，单位为秒
+table_interval = 1 * 60 * 60        # x 轴的时间间隔，单位为秒
 # table_interval = 10               # x 轴的时间间隔，单位为秒
-max_axisx_num = 10                  # x 轴显示刻度数
+max_axisx_num = 24                  # x 轴显示刻度数
 
 # 基础数据
 live_num = None                     # 当前直播间总数

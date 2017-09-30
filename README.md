@@ -28,12 +28,12 @@
     ```
     use admin
     db.auth('admin','admin123')
-    use heatbox			# 创建 heatbox 数据库
+    use heatbox			// 创建 heatbox 数据库
     db.createUser(
         {
-        user:'admin',	# heatbox 数据库的操作用户
-        pwd:'admin123',	# heatbox 数据库的用户密码
-        roles:[{role:'readWrite',db:'heatbox'}] 	# 用户权限
+        user:'admin',	// heatbox 数据库的操作用户
+        pwd:'admin123',	// heatbox 数据库的用户密码
+        roles:[{role:'readWrite',db:'heatbox'}] 	// 用户权限
         }
     )
     ```

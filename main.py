@@ -155,18 +155,39 @@ def Render(mongo_data):
     cur_data = last_data[0]
 
     # 遍历最近数据
+    # 初始化累加变量
+    heatsum_per_table_interval = 0
+    livesum_per_table_interval = 0
+    count_per_table_interval = 0
     for data in last_data:
+        if axisx_num <= 0:             
+            break
+        # 找个每个应该显示的点，计算该点对应的值
         if data['cur_time'] <= cur_data['cur_time']:
             axisx.append(str(data['cur_time'].strftime('%Y-%m-%d\n%H:%M:%S')))
-            axisy.append(getHeatPoint(data['live_num'], data['live_time'], top_live_num))
-            axisy2.append(data['live_num'])
+            # 如果时间间隔大于等于一天，那么就计算平均值
+            if table_interval >= 24 * 60 * 60 and axisx_num != max_axisx_num:
+                axisy.append(heatsum_per_table_interval / count_per_table_interval)
+                axisy2.append(livesum_per_table_interval / count_per_table_interval)
+            elif table_interval < 24 * 60 * 60:
+                axisy.append(getHeatPoint(data['live_num'], data['live_time'], top_live_num))
+                axisy2.append(data['live_num'])
             # 下一个时间锚点
-            # cur_data['cur_time'] -= delta
             cur_data['cur_time'] = data['cur_time'] - delta
             axisx_num -= 1
-        if axisx_num <= 0:
-            break
+            heatsum_per_table_interval = 0
+            livesum_per_table_interval = 0
+            count_per_table_interval = 0
+        # 累加
+        heatsum_per_table_interval += getHeatPoint(data['live_num'], data['live_time'], top_live_num)
+        livesum_per_table_interval += data['live_num']
+        count_per_table_interval += 1
 
+    if table_interval >= 24 * 60 * 60:
+        axisy.append(heatsum_per_table_interval / count_per_table_interval)
+        axisy2.append(livesum_per_table_interval / count_per_table_interval)   
+
+        
     # 列表逆序 和 降低精度处理
     axisx = axisx[::-1]     
     axisy = axisy[::-1] 
@@ -183,11 +204,11 @@ def Render(mongo_data):
     page = Page(page_title = 'HeatBox')
 
     # line*2
-    line = Line(title = "热度得分趋势图")
-    line.add("热度得分", axisx, axisy, xaxis_interval = 2, xaxis_rotate = -30, xaxis_margin = 16, is_xaxislabel_align = True, is_fill=True, area_color='#FF0000', area_opacity=0.3, mark_line=["max","average"], mark_point=["max", "min"])
+    line = Line(title = "热度趋势图")
+    line.add("热度", axisx, axisy, xaxis_interval = 2, xaxis_rotate = -30, xaxis_margin = 16, is_xaxislabel_align = True, is_fill=True, area_color='#FF0000', area_opacity=0.3, mark_line=["max","average"], mark_point=["max", "min"])
     page.add(line)
 
-    line2 = Line(title = "直播间数趋势图")
+    line2 = Line(title = "\"%s\" Bilibili 直播间数"%('"、"'.join(keys)))
     line2.add("直播间数", axisx, axisy2, xaxis_interval = 2, xaxis_rotate = -30, xaxis_margin = 16, is_xaxislabel_align = True, is_fill=True, area_color='#000000', area_opacity=0.3, mark_line=["max","average"], mark_point=["max", "min"])
     page.add(line2)
 

@@ -201,7 +201,8 @@ def Render(mongo_data):
 
 
     ## 开始渲染
-    page = Page(page_title = 'HeatBox')
+    page_title = "HeatBox - \"%s\" 热度分析"%('"、"'.join(keys))
+    page = Page(page_title = page_title.decode('utf8'))
 
     # line*2
     line = Line(title = "热度趋势图")
@@ -243,7 +244,6 @@ if __name__ == '__main__':
         try:
             main()
         except Exception as e:
-            printx(e)
-
-
+            printx(str(e))
+    
 

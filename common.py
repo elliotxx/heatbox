@@ -12,7 +12,7 @@ proxyip = ProxyIP()
 # 设置最大尝试次数
 requests.adapters.DEFAULT_RETRIES = 1
 # 请求超时时间
-timeout = 2                         
+timeout = 3
 
 # 设置
 keys = ['绝地求生','吃鸡']          # 监控的关键词
@@ -62,6 +62,7 @@ def printx(s, end = '\n'):
         sys.stdout.write(s)
     else:
         print s
+    sys.stdout.flush()
 
 def isSameDay(day_a,day_b):
     # 判断是否是同一天

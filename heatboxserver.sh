@@ -8,7 +8,7 @@ fi
 if [ $1 = start ]
 then
     psid=`ps aux | grep "python" | grep "heatbox.py" | grep -v "grep" | wc -l`
-    if [ $psid -gt 5 ]
+    if [ $psid -gt 0 ]
     then
         echo "Heatbox is running!"
         exit 0

@@ -205,11 +205,11 @@ def Render(mongo_data):
 
     # line*2
     line = Line(title = "热度趋势图")
-    line.add("热度", axisx, axisy, xaxis_interval = 2, xaxis_rotate = -30, xaxis_margin = 16, is_xaxislabel_align = True, is_fill=True, area_color='#FF0000', area_opacity=0.3, mark_line=["max","average"], mark_point=["max", "min"])
+    line.add("热度", axisx, axisy, xaxis_interval = 2, xaxis_rotate = -30, xaxis_margin = 16, is_xaxislabel_align = True, is_fill=True, area_color='#FF0000', area_opacity=0.3, mark_line=["average"], mark_point=["max", "min"])
     page.add(line)
 
     line2 = Line(title = "\"%s\" Bilibili 直播间数"%('"、"'.join(keys)))
-    line2.add("直播间数", axisx, axisy2, xaxis_interval = 2, xaxis_rotate = -30, xaxis_margin = 16, is_xaxislabel_align = True, is_fill=True, area_color='#000000', area_opacity=0.3, mark_line=["max","average"], mark_point=["max", "min"])
+    line2.add("直播间数", axisx, axisy2, xaxis_interval = 2, xaxis_rotate = -30, xaxis_margin = 16, is_xaxislabel_align = True, is_fill=True, area_color='#000000', area_opacity=0.3, mark_line=["average"], mark_point=["max", "min"])
     page.add(line2)
 
     page.render()

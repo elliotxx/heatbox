@@ -1,7 +1,7 @@
 #!/bin/bash
 if [ ! -n "$1" ]
 then
-    echo "Usages: sh heatboxserver.sh [start|stop|restart]"
+    echo "Usages: sh server.sh [start|stop|restart]"
     exit 0
 fi
 
@@ -35,5 +35,5 @@ elif [ $1 = status ];then
 
 
 else
-    echo "Usages: sh heatboxserver.sh [start|stop|restart]"
+    echo "Usages: sh server.sh [start|stop|restart]"
 fi

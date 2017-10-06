@@ -13,10 +13,9 @@ then
         echo "Heatbox is running!"
         exit 0
     else
-        sh start-heatbox.sh
+        nohup python heatbox.py > heatbox.log 2>&1 &
         echo "Start heatbox service [OK]"
     fi
-    
 
 elif [ $1 = stop ];then
     ps -ef | grep "heatbox.py" | grep -v grep | cut -c 10-15 | xargs kill -9
@@ -26,13 +25,11 @@ elif [ $1 = restart ];then
     ps -ef | grep "heatbox.py" | grep -v grep | cut -c 10-15 | xargs kill -9
     echo "Stop heatbox service [OK]"
     sleep 2
-    sh start-heatbox.sh
+    nohup python heatbox.py > heatbox.log 2>&1 &
     echo "Start heatbox service [OK]"
 
 elif [ $1 = status ];then
     ps -ef | grep "heatbox.py" | grep -v grep
-
-
 
 else
     echo "Usages: sh server.sh [start|stop|restart]"

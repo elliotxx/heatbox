@@ -29,7 +29,6 @@ elif [ $1 = restart ];then
     echo "Start heatbox service [OK]"
 
 elif [ $1 = status ];then
-    echo "Heatbox service status :"
     ps -ef | grep "heatbox.py" | grep -v grep
 
 elif [ $1 = log ];then

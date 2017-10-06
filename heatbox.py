@@ -143,8 +143,10 @@ def Render(mongo_data):
     axisy = []
     # y轴-2：直播间数
     axisy2 = []
-    # y轴-3A：观看直播总人数
+    # y轴-3：观看直播总人数
     axisy3 = []
+    # y轴-4：直播总时间
+    axisy4 = []
     # x轴刻度最大显示数量
     axisx_num = max_axisx_num 
     # 时间间隔
@@ -159,6 +161,7 @@ def Render(mongo_data):
     heatsum_per_table_interval = 0
     livesum_per_table_interval = 0
     watchsum_per_table_interval = 0
+    livetime_per_table_interval = 0
     count_per_table_interval = 0
     for data in last_data:
         if axisx_num <= 0:             
@@ -171,27 +174,32 @@ def Render(mongo_data):
                 axisy.append(heatsum_per_table_interval / count_per_table_interval)
                 axisy2.append(livesum_per_table_interval / count_per_table_interval)
                 axisy3.append(watchsum_per_table_interval / count_per_table_interval)
+                axisy4.append(livetime_per_table_interval)
             elif table_interval < 24 * 60 * 60:
                 axisy.append(getHeatPoint(data, top_live_num, top_watch_num))
                 axisy2.append(data['live_num'] if data.has_key('live_num') else 0)
                 axisy3.append(data['watch_num'] if data.has_key('watch_num') else 0)
+                axisy4.append(data['live_time'] if data.has_key('live_time') else 0)
             # 下一个时间锚点
             cur_data['cur_time'] = data['cur_time'] - delta
             axisx_num -= 1
             heatsum_per_table_interval = 0
             livesum_per_table_interval = 0
             watchsum_per_table_interval = 0
+            livetime_per_table_interval = 0
             count_per_table_interval = 0
         # 累加
         heatsum_per_table_interval += getHeatPoint(data, top_live_num, top_watch_num)
         livesum_per_table_interval += data['live_num'] if data.has_key('live_num') else 0
         watchsum_per_table_interval += data['watch_num'] if data.has_key('watch_num') else 0
+        livetime_per_table_interval = data['live_time'] if data['live_time'] > livetime_per_table_interval else livetime_per_table_interval if data.has_key('live_time') else 0
         count_per_table_interval += 1
 
     if table_interval >= 24 * 60 * 60:
         axisy.append(heatsum_per_table_interval / count_per_table_interval)
         axisy2.append(livesum_per_table_interval / count_per_table_interval)   
         axisy3.append(watchsum_per_table_interval / count_per_table_interval)
+        axisy4.append(livetime_per_table_interval)
 
         
     # 列表逆序 和 降低精度处理
@@ -199,6 +207,7 @@ def Render(mongo_data):
     axisy = axisy[::-1] 
     axisy2 = axisy2[::-1]
     axisy3 = axisy3[::-1]
+    axisy4 = axisy4[::-1]
     axisy = map(lambda x:round(x,2),axisy)
 
     # 输出测试
@@ -206,13 +215,14 @@ def Render(mongo_data):
     print axisy
     print axisy2
     print axisy3
+    print axisy4
 
 
     ## 开始渲染
     page_title = "HeatBox - \"%s\" 热度分析"%('"、"'.join(keys))
     page = Page(page_title = page_title.decode('utf8'))
 
-    # line*3
+    # line
     line = Line(title = "热度趋势图")
     line.add("热度", axisx, axisy, xaxis_interval = 0, xaxis_rotate = -30, xaxis_margin = 16, is_xaxislabel_align = True, is_fill=True, area_color='#FF0000', area_opacity=0.3, mark_line=["average"], mark_point=["max", "min"])
     page.add(line)
@@ -224,6 +234,11 @@ def Render(mongo_data):
     line3 = Line(title = "\"%s\" Bilibili 观看直播人数"%('"、"'.join(keys)))
     line3.add("观看直播人数", axisx, axisy3, xaxis_interval = 0, xaxis_rotate = -30, xaxis_margin = 16, is_xaxislabel_align = True, is_fill=True, area_color='#00FF00', area_opacity=0.3, mark_line=["average"], mark_point=["max", "min"])
     page.add(line3)
+
+    line4 = Line(title = "\"%s\" Bilibili 直播总时间"%('"、"'.join(keys)))
+    line4.add("直播总时间", axisx, axisy4, xaxis_interval = 0, xaxis_rotate = -30, xaxis_margin = 16, is_xaxislabel_align = True, is_fill=True, area_color='#0000FF', area_opacity=0.3, mark_line=["average"], mark_point=["max", "min"])
+    page.add(line4)
+
 
     page.render()
 

@@ -52,15 +52,15 @@ mongo_user = 'your_user'        # mongodb 登陆用户
 mongo_pwd  = 'your_password'    # mongodb 用户密码
 ```
 
-3. 运行
-Linux :
-```
-sh server.sh start
-```
-Windows :
-```
-python heatbox.py
-```
+3. 运行  
+    * Linux :  
+    ```
+    sh server.sh start
+    ```
+    * Windows :  
+    ```
+    python heatbox.py
+    ```
 
 4. 测试
     * windows 中在浏览器中打开生成的 render.html 
@@ -68,7 +68,7 @@ python heatbox.py
     * 等待一会即可看到渲染结果
 
 ### 注意
-* 自带脚本功能：
+* 脚本功能：
     * start-webserver.sh：启动临时 http 服务器（linux）
     * server.sh：启动/停止/重启/查看 heatbox 服务，用法：  
     ```

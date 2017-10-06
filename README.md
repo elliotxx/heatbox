@@ -1,5 +1,8 @@
 ## heatbox - 热度走势图
 
+### 演示地址
+[http://heatbox.yangyingming.com](http://heatbox.yangyingming.com)
+
 ### 特性
 * 自定义 x 轴刻度个数
 * 自定义 x 轴时间间隔

@@ -1,7 +1,7 @@
 #!/bin/bash
 if [ ! -n "$1" ]
 then
-    echo "Usages: sh server.sh [start|stop|restart|status]"
+    echo "Usages: sh server.sh [start|stop|restart|status|log]"
     exit 0
 fi
 
@@ -32,6 +32,9 @@ elif [ $1 = status ];then
     echo "Heatbox service status :"
     ps -ef | grep "heatbox.py" | grep -v grep
 
+elif [ $1 = log ];then
+    tail -f heatbox.log
+
 else
-    echo "Usages: sh server.sh [start|stop|restart|status]"
+    echo "Usages: sh server.sh [start|stop|restart|status|log]"
 fi

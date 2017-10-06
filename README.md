@@ -72,9 +72,9 @@ mongo_pwd  = 'your_password'    # mongodb 用户密码
 ### 注意
 * 脚本功能：
     * start-webserver.sh：启动临时 http 服务器（linux）
-    * server.sh：启动/停止/重启/查看 heatbox 服务，用法：  
+    * server.sh：启动/停止/重启/查看状态/查看日志 heatbox 服务，用法：  
     ```
-    Usages: sh server.sh [start|stop|restart|status]
+    Usages: sh server.sh [start|stop|restart|status|log]
     ```
 
 ### 游戏关键字

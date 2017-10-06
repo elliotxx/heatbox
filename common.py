@@ -28,7 +28,6 @@ live_time = None                    # 当前直播总时长
 top_live_num = None                 # 曾出现过的最高直播间总数
 top_watch_num = None                # 曾出现过的最高观看直播间的总人数
 heat_point = None                   # 当前热度得分
-today_heat_point = None             # 今天的最高得分
 previous_time = None                # 一个时间间隔开始的时间
 
 # 数据库配置

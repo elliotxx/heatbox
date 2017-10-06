@@ -46,30 +46,23 @@ def Init():
 
     # 初始化 历史最高直播间数 和 当天的最高得分
     if mongo_global.count() == 0:
-        data = {'top_live_num':0, 'top_watch_num':0, 'today_heat_point':0}
+        data = {'top_live_num':0, 'top_watch_num':0}
     else:
         # 默认取出第一条数据(默认该集合中只有一条记录)
         data = mongo_global.find_one()
         # 初始化
         top_live_num = data['top_live_num'] if data.has_key('top_live_num') else 0
         top_watch_num = data['top_watch_num'] if data.has_key('top_watch_num') else 0
-        if not isSameDay(last_data['cur_time'],now):
-            # 不在同一天
-            data['today_heat_point'] = 0
-        today_heat_point = data['today_heat_point'] if data.has_key('today_heat_point') else 0
 
     mongo_global.save(data)
 
-
-
-    # print live_time, today_heat_point
 
     return mongo_global, mongo_data
 
 
 def updateHeatPoint(mongo_global, mongo_data):
     # 重新开始计算热度
-    global live_num, watch_num, top_live_num, top_watch_num, previous_time, live_time, today_heat_point, heat_point
+    global live_num, watch_num, top_live_num, top_watch_num, previous_time, live_time, heat_point
 
     # 获得当前直播间总数
     # 直播间号列表
@@ -131,14 +124,6 @@ def updateHeatPoint(mongo_global, mongo_data):
     # 更新今天的热度得分
     heat_point = getHeatPoint(data, top_live_num, top_watch_num)
 
-    if heat_point > today_heat_point:
-        today_heat_point = heat_point
-        # 数据库中同步更新
-        data = mongo_global.find_one()    
-        data['today_heat_point'] = today_heat_point
-        mongo_global.save(data)
-
-
 
     printx('%s'%cur_time)
     printx('真实时间间隔：%s s'%after_time)
@@ -146,7 +131,6 @@ def updateHeatPoint(mongo_global, mongo_data):
     printx('观看直播总人数：%d'%watch_num)
     printx('直播总时长：%d s'%live_time)
     printx('当前热度得分：%f + %f + %f = %f'%(float(live_num) / top_live_num * 100, float(watch_num) / top_watch_num * 100, float(live_time) / (24*60*60*live_num) * 100, heat_point))
-    printx('今日热度得分：%f'%today_heat_point)
 
 
 def Render(mongo_data):

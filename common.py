@@ -23,12 +23,9 @@ max_axisx_num = 25                      # x 轴显示刻度数
 xaxis_interval = max_axisx_num / (8+1)  # x轴隔多少个便显示
 
 # 基础数据
-live_num = None                     # 当前直播间总数
-watch_num = None                    # 当前观看直播的总人数
 live_time = None                    # 当前直播总时长
 top_live_num = None                 # 曾出现过的最高直播间总数
 top_watch_num = None                # 曾出现过的最高观看直播间的总人数
-heat_point = None                   # 当前热度得分
 previous_time = None                # 一个时间间隔开始的时间
 
 # 数据库配置

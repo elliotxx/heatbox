@@ -62,7 +62,7 @@ def Init():
 
 def updateHeatPoint(mongo_global, mongo_data):
     # 重新开始计算热度
-    global live_num, watch_num, top_live_num, top_watch_num, previous_time, live_time, heat_point
+    global top_live_num, top_watch_num, previous_time, live_time
 
     # 获得当前直播间总数
     # 直播间号列表

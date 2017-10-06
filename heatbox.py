@@ -224,19 +224,20 @@ def Render(mongo_data):
 
     # line
     line = Line(title = "热度趋势图")
-    line.add("热度", axisx, axisy, xaxis_interval = 0, xaxis_rotate = -30, xaxis_margin = 16, is_xaxislabel_align = True, is_fill=True, area_color='#FF0000', area_opacity=0.3, mark_line=["average"], mark_point=["max", "min"])
+    line.add("热度", axisx, axisy, xaxis_interval = xaxis_interval, xaxis_rotate = -30, xaxis_margin = 16, is_xaxislabel_align = True, is_fill=True, area_color='#FF0000', area_opacity=0.3, mark_line=["average"], mark_point=["max", "min"], mark_point_symbolsize = 70)   # , is_datazoom_show = True)
     page.add(line)
 
     line2 = Line(title = "\"%s\" Bilibili 直播间数"%('"、"'.join(keys)))
-    line2.add("直播间数", axisx, axisy2, xaxis_interval = 0, xaxis_rotate = -30, xaxis_margin = 16, is_xaxislabel_align = True, is_fill=True, area_color='#000000', area_opacity=0.3, mark_line=["average"], mark_point=["max", "min"])
+    line2.add("直播间数", axisx, axisy2, xaxis_interval = xaxis_interval, xaxis_rotate = -30, xaxis_margin = 16, is_xaxislabel_align = True, is_fill=True, area_color='#000000', area_opacity=0.3, mark_line=["average"], mark_point=["max", "min"])
     page.add(line2)
 
     line3 = Line(title = "\"%s\" Bilibili 观看直播人数"%('"、"'.join(keys)))
-    line3.add("观看直播人数", axisx, axisy3, xaxis_interval = 0, xaxis_rotate = -30, xaxis_margin = 16, is_xaxislabel_align = True, is_fill=True, area_color='#00FF00', area_opacity=0.3, mark_line=["average"], mark_point=["max", "min"])
+    line3.add("观看直播人数", axisx, axisy3, xaxis_interval = xaxis_interval, xaxis_rotate = -30, xaxis_margin = 16, is_xaxislabel_align = True, is_fill=True, area_color='#00FF00', area_opacity=0.3, mark_line=["average"], mark_point=["max", "min"], mark_point_symbolsize = 85, legend_pos = 'right')
     page.add(line3)
 
     line4 = Line(title = "\"%s\" Bilibili 直播总时间"%('"、"'.join(keys)))
-    line4.add("直播总时间", axisx, axisy4, xaxis_interval = 0, xaxis_rotate = -30, xaxis_margin = 16, is_xaxislabel_align = True, is_fill=True, area_color='#0000FF', area_opacity=0.3, mark_line=["average"], mark_point=["max", "min"])
+    line4.add("直播总时间(小时)", axisx, map(lambda x:x/60/60, axisy4), xaxis_interval = xaxis_interval, xaxis_rotate = -30, xaxis_margin = 16, is_xaxislabel_align = True, is_fill=True, area_color='#0000FF', area_opacity=0.3, mark_line=["average"], mark_point=["max", "min"], mark_point_symbolsize = 60, legend_pos = 'right')
+    line4.add("直播总时间(天)", axisx, map(lambda x:x/60/60/24, axisy4), xaxis_interval = xaxis_interval, xaxis_rotate = -30, xaxis_margin = 16, is_xaxislabel_align = True, is_fill=True, area_color='#0000FF', area_opacity=0.3, mark_line=["average"], mark_point=["max", "min"], legend_pos = 'right')
     page.add(line4)
 
 

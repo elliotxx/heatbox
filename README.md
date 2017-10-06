@@ -5,7 +5,7 @@
 * 自定义 x 轴时间间隔
 * 代理池
 
-### 依赖
+### 安装依赖
 * requests
 * pymongo
 * pyecharts
@@ -39,10 +39,10 @@
     )
     ```
 
-### 启动
-1. 安装环境：Python 环境和依赖 + MongoDB
+### 启动说明
+1. 安装环境：Python 环境和依赖 + MongoDB 配置
 
-2. 修改 common.py 中的数据库配置
+2. 配置 common.py 中的数据库信息
 ```
 # 数据库配置
 mongo_dbname = 'heatbox'
@@ -52,20 +52,28 @@ mongo_user = 'your_user'        # mongodb 登陆用户
 mongo_pwd  = 'your_password'    # mongodb 用户密码
 ```
 
-3. 运行 main.py
+3. 运行
+Linux :
+```
+sh server.sh start
+```
+Windows :
+```
+python heatbox.py
+```
 
-4. 测试，启动 http 服务器：
-    * windows 中运行脚本 start-webserver.bat，然后用浏览器访问 http://localhost:8010/render.html 
-    * linux 中运行脚本 start-webserver.sh，然后用浏览器访问 http://[your_vps_ip]:8010/render.html
+4. 测试
+    * windows 中在浏览器中打开生成的 render.html 
+    * linux 中运行脚本 start-webserver.sh，然后用本地浏览器访问 http://[your_vps_ip]:8010/render.html
     * 等待一会即可看到渲染结果
 
 ### 注意
 * 自带脚本功能：
     * start-webserver.sh：启动临时 http 服务器（linux）
     * server.sh：启动/停止/重启/查看 heatbox 服务，用法：  
-```
-Usages: sh server.sh [start|stop|restart|status]
-```
+    ```
+    Usages: sh server.sh [start|stop|restart|status]
+    ```
 
 ### 游戏关键字
 * 绝地求生

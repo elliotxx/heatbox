@@ -238,7 +238,7 @@ def Render(mongo_data):
     page.add(line2)
 
     line3 = Line(title = "\"%s\" Bilibili 观看直播人数"%('"、"'.join(keys)))
-    line2.add("观看直播人数", axisx, axisy3, xaxis_interval = 0, xaxis_rotate = -30, xaxis_margin = 16, is_xaxislabel_align = True, is_fill=True, area_color='#00FF00', area_opacity=0.3, mark_line=["average"], mark_point=["max", "min"])
+    line3.add("观看直播人数", axisx, axisy3, xaxis_interval = 0, xaxis_rotate = -30, xaxis_margin = 16, is_xaxislabel_align = True, is_fill=True, area_color='#00FF00', area_opacity=0.3, mark_line=["average"], mark_point=["max", "min"])
     page.add(line3)
 
     page.render()

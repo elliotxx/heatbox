@@ -1,7 +1,7 @@
 #!/bin/bash
 if [ ! -n "$1" ]
 then
-    echo "Usages: sh server.sh [start|stop|restart]"
+    echo "Usages: sh server.sh [start|stop|restart|status]"
     exit 0
 fi
 
@@ -29,8 +29,9 @@ elif [ $1 = restart ];then
     echo "Start heatbox service [OK]"
 
 elif [ $1 = status ];then
+    echo "Heatbox service status :"
     ps -ef | grep "heatbox.py" | grep -v grep
 
 else
-    echo "Usages: sh server.sh [start|stop|restart]"
+    echo "Usages: sh server.sh [start|stop|restart|status]"
 fi

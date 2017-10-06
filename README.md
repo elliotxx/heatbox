@@ -60,24 +60,29 @@ mongo_pwd  = 'your_password'    # mongodb 用户密码
     * 等待一会即可看到渲染结果
 
 ### 注意
-* start-main.sh 和 start-webserver.sh 是 linux 脚本，功能分别是：
-    * start-main.sh：后台运行主进程 main.py
-    * start-webserver.sh：后台启动 http 服务器
+* 自带脚本功能：
+    * start-webserver.sh：启动临时 http 服务器（linux）
+    * server.sh：启动/停止/重启/查看 heatbox 服务，用法：  
+```
+Usages: sh server.sh [start|stop|restart|status]
+```
 
 ### 游戏关键字
 * 绝地求生
 * 吃鸡
 
 ### 监控指标
-* bilibili
+* Bilibili
 	* 直播间数量
 	* 直播总时长（从当天程序开始运行时计时，每隔一段时间检测一次）
-	* ~~直播观看总人数~~
+	* 观看直播总人数
 
 ### 热度得分计算公式
 ```
 直播间数量：live_num
+观看直播总人数：watch_num
 曾出现过的最高直播间总数：top_live_num	# 这个值一旦出现变化，那么之前计算的所有得分都要重新计算一遍
+曾出现过的最高观看直播人数：top_watch_num
 当天的直播总时长（分钟）：live_time
 
 当天的热度得分：heat_point = float(live_num) / top_live_num * 100 + float(watch_num) / top_watch_num * 100 + float(live_time) / (24*60*60*live_num) * 100

@@ -17,14 +17,16 @@ timeout = 3
 # 设置
 keys = ['绝地求生','吃鸡']          # 监控的关键词
 watch_interval = 5                  # 默认监控时间间隔，单位为秒
-table_interval = 24 * 60 * 60        # x 轴的时间间隔，单位为秒
+table_interval = 24 * 60 * 60       # x 轴的时间间隔，单位为秒
 # table_interval = 10               # x 轴的时间间隔，单位为秒
 max_axisx_num = 25                  # x 轴显示刻度数
 
 # 基础数据
 live_num = None                     # 当前直播间总数
+watch_num = None                    # 当前观看直播的总人数
 live_time = None                    # 当前直播总时长
 top_live_num = None                 # 曾出现过的最高直播间总数
+top_watch_num = None                # 曾出现过的最高观看直播间的总人数
 heat_point = None                   # 当前热度得分
 today_heat_point = None             # 今天的最高得分
 previous_time = None                # 一个时间间隔开始的时间
@@ -103,7 +105,7 @@ def getLivePageSum(key):
 def getCurLiveNo(key,page):
     # 获取当前页面的直播间列表
     url = 'https://search.bilibili.com/live?keyword=%s&page=%d&type=all&order=online&coverType=user_cover'%(key.decode('utf8'),page)
-    LiveNo_pattern = r'<li class="room-item">.*?live\.bilibili\.com/(.*?)\?'
+    LiveNo_pattern = r'<li class="room-item">.*?live\.bilibili\.com/(.*?)\?.*?<i class="icon-live-watch"></i><span>(.*?)</span>'
 
     # 匹配当前页面的所有直播间号
     items = Parse(url, LiveNo_pattern)
@@ -111,6 +113,9 @@ def getCurLiveNo(key,page):
     #     raise Exception,'获取第 %d 页直播间列表失败'%page
     return items
 
-def getHeatPoint(live_num, live_time, top_live_num):
+def getHeatPoint(data, top_live_num, top_watch_num):
     # 热度得分计算公式
-    return float(live_num) / top_live_num * 100 + float(live_time) / (24*60*60*live_num) * 100
+    live_num = data['live_num'] if data.has_key('live_num') else 0
+    watch_num = data['watch_num'] if data.has_key('watch_num') else 0
+    live_time = data['live_time'] if data.has_key('live_time') else 0
+    return float(live_num) / top_live_num * 100 + float(watch_num) / top_watch_num * 100 + float(live_time) / (24*60*60*live_num) * 100

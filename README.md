@@ -34,7 +34,7 @@ switched to db admin
 
 4. 创建 heatbox 数据库，以及操作该数据库的用户
 ```
-use heatbox         // 创建 iHealth 数据库，并作为认证数据库
+use heatbox         // 创建数据库，并作为认证数据库
 db.createUser({
     user:'admin',   // 用户名
     pwd:'admin123', // 用户密码

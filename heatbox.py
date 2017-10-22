@@ -168,7 +168,7 @@ def Render(mongo_data):
             break
         # 找个每个应该显示的点，计算该点对应的值
         if data['cur_time'] <= cur_data['cur_time']:
-            axisx.append(str(data['cur_time'].strftime('%Y-%m-%d\n%H:%M:%S')))
+            axisx.append(str(data['cur_time'].strftime('%Y-%m-%d\n%H:%M:%S\n%A')))
             # 如果时间间隔大于等于一天，那么就计算平均值
             if table_interval >= 24 * 60 * 60 and axisx_num != max_axisx_num:
                 axisy.append(heatsum_per_table_interval / count_per_table_interval)

@@ -14,33 +14,46 @@
 * pyecharts
 
 ### MongoDB 配置
-1. 开启 MongoDB 权限认证，创建管理员用户  
-    可参考：http://gogs.yangyingming.com/windcode/my-db  
-    假设创建的管理员账户为：
-    
-    ```
-    user: admin
-    password: admin123
-    ```
-2. 远程连接 MongoDB
+1. 开启 MongoDB 权限认证：**在配置文件中加入 auth = true**
 
-    ```
-    mongo mongodb://[your_ip]:27017
-    ```
-3. 运行如下代码可创建 heatbox 数据库用户
+2. 创建管理员用户（如果你是第一次使用 MongoDB）  
+```
+use admin
+db.createUser({user:"admin",pwd:"admin123",roles:["userAdminAnyDatabase"]})
+```
+管理员用户用来创建其他数据库和用户
 
-    ```
-    use admin
-    db.auth('admin','admin123')
-    use heatbox			// 创建 heatbox 数据库
-    db.createUser(
-        {
-        user:'admin',	// heatbox 数据库的操作用户
-        pwd:'admin123',	// heatbox 数据库的用户密码
-        roles:[{role:'readWrite',db:'heatbox'}] 	// 用户权限
-        }
-    )
-    ```
+3. 使用管理员账户远程登录
+```
+C:\Users\cs>mongo [your_ip]:27017
+> use admin
+switched to db admin
+> db.auth('admin','admin123')
+1
+```
+
+4. 创建 heatbox 数据库，以及操作该数据库的用户
+```
+use heatbox         // 创建 iHealth 数据库，并作为认证数据库
+db.createUser({
+    user:'admin',   // 用户名
+    pwd:'admin123', // 用户密码
+    roles:[{role:'readWrite',db:'heatbox'}]     // 为该用户赋予数据库的读写权限
+})
+```
+
+5. 使用该用户远程登录 heatbox 数据库
+```
+C:\Users\cs>mongo [your_ip]:27017
+> use heatbox
+switched to db heatbox
+> db.auth('admin','admin123')
+1
+> db.getCollectionNames()
+[ ]
+```
+数据库刚刚创建，所以没有数据
+
 
 ### 启动说明
 1. 安装环境：Python 环境和依赖 + MongoDB 配置

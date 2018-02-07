@@ -1,6 +1,7 @@
 #coding=utf8
 import re
 import sys
+import json
 import socket
 import requests
 from datetime import datetime
@@ -70,6 +71,21 @@ def isSameDay(day_a,day_b):
     else:
         return False
 
+def getHtml(url):
+    # 根据 url 获取网页源码
+    # 设置代理IP，发送请求
+    while True:
+        try:
+            ip = proxyip.get()
+            proxies = {'http':'%s:%d'%(ip[0],ip[1])}
+            response = requests.get(url, proxies=proxies, timeout=timeout)
+            break
+        except Exception,e:
+            printx('请求失败，重试')
+    html = response.content
+    return html
+ 
+
 def Parse(url,pattern):
     # 根据模式串 pattern 解析 url 页面源码
     # 设置代理IP，发送请求
@@ -89,26 +105,26 @@ def Parse(url,pattern):
 
 def getLivePageSum(key):
     # 获取某关键字的直播间总页数
-    url = 'https://search.bilibili.com/live?keyword=%s'%key.decode('utf8')
-    LivePageSum_pattern = r'data-num_pages="(.*?)"'
-
-    # 匹配直播间总数
+    url = 'https://search.bilibili.com/api/search?search_type=live&keyword=%s'%key.decode('utf8')
     try:
-        items = Parse(url, LivePageSum_pattern)
-        return int(items[0])
+        html = getHtml(url)
+        res = json.loads(html)
+        pageSum = res['pageinfo']['live_room']['numPages']
+        return int(pageSum)
     except Exception,e:
         raise Exception,'获取某关键字的直播间总页数失败'
 
-def getCurLiveNo(key,page):
+def getCurLiveNo(key, page):
     # 获取当前页面的直播间列表
-    url = 'https://search.bilibili.com/live?keyword=%s&page=%d&type=all&order=online&coverType=user_cover'%(key.decode('utf8'),page)
-    LiveNo_pattern = r'<li class="room-item">.*?live\.bilibili\.com/(.*?)\?.*?<i class="icon-live-watch"></i><span>(.*?)</span>'
-
-    # 匹配当前页面的所有直播间号
-    items = Parse(url, LiveNo_pattern)
-    # if len(items) == 0:
-    #     raise Exception,'获取第 %d 页直播间列表失败'%page
-    return items
+    url = 'https://search.bilibili.com/api/search?search_type=live&keyword=%s&page=%d'%(key.decode('utf8'), page)
+    try:
+        html = getHtml(url)
+        res = json.loads(html)
+        all_live_list = res['result']['live_room']
+        live_list = [(live['roomid'], live['online']) for live in all_live_list]
+        return live_list
+    except Exception,e:
+        raise Exception,'获取第 %d 页直播间列表失败'%page
 
 def getHeatPoint(data, top_live_num, top_watch_num):
     # 热度得分计算公式
